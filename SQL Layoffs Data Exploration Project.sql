@@ -131,28 +131,3 @@ FROM Industry_Year_Rank
 WHERE Ranking <= 5;
 -- Shows which industries had the most layoffs by year. Ranking of 1 represents the highest number of layoffs that year.
 
-
-
-
-
-
-
-
-
-
-WITH Company_Year (company,years,total_laid_off) AS  -- Creating a CTE with the company and year with the total lay offs for each year
-(
-SELECT company, YEAR(`date`), SUM(total_laid_off)
-FROM layoffs_staging2
-GROUP BY company, YEAR(`date`)
-ORDER BY company ASC
-), Company_Year_Rank AS  -- Creating a CTE with the rank then below we can filter by the rank
-(SELECT *, 
-DENSE_RANK() OVER(PARTITION BY years ORDER BY total_laid_off DESC) AS Ranking
-FROM Company_Year
-WHERE years IS NOT NULL
-)
-SELECT *
-FROM Company_Year_Rank
-WHERE Ranking <= 5
-;
